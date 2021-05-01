@@ -1,8 +1,6 @@
 # pull official base image
 FROM python:3.8.3-alpine
 
-# set work directory
-WORKDIR /usr/src/
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -22,7 +20,17 @@ RUN pip install -r requirements.txt
 COPY ./entrypoint.sh .
 
 # copy project
-COPY . .
+RUN mkdir /app
+WORKDIR /app
+COPY . /app
+RUN chmod +x /entrypoint.sh
+
+# RUN mkdir -p /vol/web/media
+# RUN mkdir -p /vol/web/static
+# RUN adduser -D user
+# RUN chown -R user:user /vol/
+# RUN chmod -R 755 /vol/web
+# USER user
 
 # run entrypoint.sh
-ENTRYPOINT ["/usr/src/entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]

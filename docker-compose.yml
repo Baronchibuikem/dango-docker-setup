@@ -2,31 +2,37 @@ version: "3.7"
 
 services:
   web:
+    container_name: transprop_web
     build: ./
     volumes:
-      - ./:/usr/src/
+      - ./:/app/
+      - static_volume:/app/staticfiles
     ports:
       - 8000:8000
     env_file:
       - ./.env
-    depends_on: 
-      - db
-  db:
+    depends_on:
+      - database
+  database:
+    container_name: transprop_database
     image: postgres:12.0-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
     environment:
-      - .env.prod.db
+      - POSTGRES_DB=djdockerdb
+      - POSTGRES_USER=djbaron
+      - POSTGRES_PASSWORD=icodepython
+    volumes:
+      - ./database_data:/var/lib/postgresql/data/
   nginx:
+    container_name: transprop_nginx
     build: ./nginx
     volumes:
-      - static:/static
-      - media:/media
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
     ports:
-      - "80:80"
+      - 1337:80
     depends_on:
       - web
-volumes: 
-  postgres_data:
-  static:
-  media:
+volumes:
+  database_data:
+  static_volume:
+  media_volume:
